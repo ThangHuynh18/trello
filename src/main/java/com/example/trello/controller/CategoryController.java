@@ -6,6 +6,8 @@ import com.example.trello.dto.ResponseDTO;
 import com.example.trello.dto.SuccessCode;
 import com.example.trello.exception.ResourceNotFoundException;
 import com.example.trello.service.CategoryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/categories")
 public class CategoryController {
+
+    Logger logger= LoggerFactory.getLogger(CategoryController.class);
 
     @Autowired
     private CategoryService categoryService;
@@ -49,9 +53,21 @@ public class CategoryController {
         ResponseDTO responseDTO = new ResponseDTO();
         try {
             Optional<CategoryDTO> categoryDTO = categoryService.getCate(id);
+            if(categoryDTO.isPresent()){
+                responseDTO.setData(categoryDTO);
+                responseDTO.setSuccessCode(SuccessCode.FIND_CATEGORY_SUCCESS);
+                logger.info("category found : {}",categoryDTO.get().getCategoryName());
+            } else {
+                try {
+                    throw new Exception();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    logger.error("Category Not Found with ID : {}",id);
+                }
 
-            responseDTO.setData(categoryDTO);
-            responseDTO.setSuccessCode(SuccessCode.FIND_CATEGORY_SUCCESS);
+            }
+
+
         } catch (Exception e) {
             throw new ResourceNotFoundException(""+ErrorCode.FIND_CATEGORY_ERROR);
         }

@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: TRELLO
+
+#server:
+#  port: 9898
+logging:
+  file:
+    name: D:\Application\ELK Spring boot\elk-stack.log
