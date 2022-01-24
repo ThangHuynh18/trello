@@ -24,9 +24,9 @@ public class Category {
     @NotBlank
     private String categoryName;
 
-//    public Category(long category_id, String categoryName) {
-//        this.category_id = category_id;
-////        this.products = products;
-//        this.categoryName = categoryName;
-//    }
+    public Category(long category_id, String categoryName) {
+        this.category_id = category_id;
+//        this.products = products;
+        this.categoryName = categoryName;
+    }
 }
