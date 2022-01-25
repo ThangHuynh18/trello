@@ -44,21 +44,6 @@ public class CategoryServiceTest {
     CategoryServiceImpl categoryService;
 
 
-//    @Test
-//    public void shouldReturnAllCategoryDto() {
-//
-//        when(categoryRepository.findAll()).thenReturn(categories);
-//
-//        List<CategoryDTO> categoryDtos1 = categoryService.retrieveCategories();
-//
-////        assertEquals(categoryDtos1.size(),categoryDtos.size());
-//
-//        assertThat(categoryDtos).usingRecursiveComparison().isEqualTo(categoryDtos1);
-//
-//        verify(categoryRepository, times(1)).findAll();
-//    }
-
-
     @Test
     public void whenGetAllCateThenReturnList(){
 
@@ -149,6 +134,21 @@ public class CategoryServiceTest {
         verify(categoryRepository, atLeastOnce()).save(any(Category.class));
     }
 
+
+    //    @Test
+//    public void shouldReturnAllCategoryDto() {
+//
+//        when(categoryRepository.findAll()).thenReturn(categories);
+//
+//        List<CategoryDTO> categoryDtos1 = categoryService.retrieveCategories();
+//
+////        assertEquals(categoryDtos1.size(),categoryDtos.size());
+//
+//        assertThat(categoryDtos).usingRecursiveComparison().isEqualTo(categoryDtos1);
+//
+//        verify(categoryRepository, times(1)).findAll();
+//    }
+    
 
 //    @Test
 //    public void testDeleteCategory_CategoryRepositoryFindByIdReturnsAbsent() throws ResourceNotFoundException {

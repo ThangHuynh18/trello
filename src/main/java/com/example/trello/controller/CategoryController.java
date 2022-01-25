@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping("/api/categories")
 public class CategoryController {
 
@@ -73,6 +74,36 @@ public class CategoryController {
         }
         return ResponseEntity.ok(responseDTO);
     }
+
+
+    @GetMapping("/category/{category_id}")
+    public ResponseEntity<Optional<CategoryDTO>> getCateById(@PathVariable("category_id") Long id) throws ResourceNotFoundException {
+        ResponseDTO responseDTO = new ResponseDTO();
+        Optional<CategoryDTO> categoryDTO;
+        try {
+            categoryDTO = categoryService.getCate(id);
+            if (categoryDTO.isPresent()) {
+                responseDTO.setData(categoryDTO);
+                responseDTO.setSuccessCode(SuccessCode.FIND_CATEGORY_SUCCESS);
+                logger.info("category found : {}", categoryDTO.get().getCategoryName());
+            } else {
+                try {
+                    throw new Exception();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    logger.error("Category Not Found with ID : {}", id);
+                }
+
+            }
+
+
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("" + ErrorCode.FIND_CATEGORY_ERROR);
+        }
+        return ResponseEntity.ok(categoryDTO);
+    }
+
+
 
     //insert
 
