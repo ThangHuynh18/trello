@@ -12,9 +12,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.BDDMockito.given;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,8 +43,6 @@ import java.io.IOException;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -129,7 +131,7 @@ class CategoryControllerTest {
         mockMvc.perform(mockRequest)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", notNullValue()));
-                //.andExpect(jsonPath("$.categoryName", is("category1")));
+                //.andExpect(jsonPath("$.['data.categoryName']", is("category1")));
     }
 
     @Test
@@ -155,9 +157,13 @@ class CategoryControllerTest {
     @Test
     public void deleteProduct() throws Exception {
         String uri = "/api/categories/category/2";
+
+        when(categoryService.getCate(RECORD_1.getCategory_id())).thenReturn(Optional.of(RECORD_1));
+        when(categoryService.deleteCategory(RECORD_1.getCategory_id())).thenReturn(true);
+
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete(uri)).andReturn();
         int status = mvcResult.getResponse().getStatus();
-        assertEquals(200, status);
+        Assertions.assertEquals(200, status);
 //        String content = mvcResult.getResponse().getContentAsString();
 //        assertEquals(content, "Category is deleted successsfully");
     }

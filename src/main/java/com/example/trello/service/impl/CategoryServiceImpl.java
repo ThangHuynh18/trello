@@ -1,6 +1,8 @@
 package com.example.trello.service.impl;
 
 import com.example.trello.dto.CategoryDTO;
+import com.example.trello.dto.CategoryProductDTO;
+import com.example.trello.dto.Statistic;
 import com.example.trello.entity.Category;
 import com.example.trello.exception.ResourceNotFoundException;
 import com.example.trello.repository.CategoryRepository;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,6 +60,24 @@ public class CategoryServiceImpl implements CategoryService {
         return new CategoryDTO().convertToDto(category);
     }
 
+    @Override
+    public Optional<CategoryDTO> findCategoryByName(String name) throws ResourceNotFoundException {
+        Category category = categoryRepository.findCategoryByCategoryName(name)
+                .orElseThrow(() -> new ResourceNotFoundException("Id not found"));
+        return Optional.of(new CategoryDTO().convertToDto(category));
+    }
+
+    @Override
+    public List<CategoryProductDTO> getAllCategoryJoinProduct() {
+
+        List<Category> categoryList = categoryRepository.getAllFetchJoin();
+        return new CategoryProductDTO().toListDto(categoryList);
+    }
+
+    @Override
+    public List<Statistic> getCategoryCountProduct() {
+        return categoryRepository.getStatistic();
+    }
 
 
 }

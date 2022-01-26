@@ -148,7 +148,7 @@ public class CategoryServiceTest {
 //
 //        verify(categoryRepository, times(1)).findAll();
 //    }
-    
+
 
 //    @Test
 //    public void testDeleteCategory_CategoryRepositoryFindByIdReturnsAbsent() throws ResourceNotFoundException {

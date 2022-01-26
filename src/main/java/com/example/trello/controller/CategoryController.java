@@ -1,9 +1,7 @@
 package com.example.trello.controller;
 
-import com.example.trello.dto.CategoryDTO;
-import com.example.trello.dto.ErrorCode;
-import com.example.trello.dto.ResponseDTO;
-import com.example.trello.dto.SuccessCode;
+import com.example.trello.dto.*;
+import com.example.trello.entity.Category;
 import com.example.trello.exception.ResourceNotFoundException;
 import com.example.trello.service.CategoryService;
 import org.slf4j.Logger;
@@ -104,6 +102,22 @@ public class CategoryController {
     }
 
 
+    @GetMapping("/category/search")
+    public Optional<CategoryDTO> findCategoryByName(@RequestParam("name")  String name) throws ResourceNotFoundException {
+        return categoryService.findCategoryByName(name);
+    }
+
+
+    @GetMapping("/category/product")
+    public List<CategoryProductDTO> getAllCateHaveProduct() {
+        return categoryService.getAllCategoryJoinProduct();
+    }
+
+
+    @GetMapping("/category/count")
+    public List<Statistic> getCateCountProduct() {
+        return categoryService.getCategoryCountProduct();
+    }
 
     //insert
 
