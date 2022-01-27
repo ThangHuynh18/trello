@@ -4,10 +4,13 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 import com.example.trello.dto.CategoryDTO;
+import com.example.trello.dto.LoginResponse;
 import com.example.trello.entity.Category;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,6 +36,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Base64;
+import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -66,12 +70,29 @@ public class CategoryControllerIntegrationTest {
     }
 
 
+    private String getAuthorization() throws JsonProcessingException {
+
+        ObjectNode loginRequest = objectMapper.createObjectNode();
+        loginRequest.put("username", "admin");
+        loginRequest.put("password", "123456");
+
+        HttpEntity<ObjectNode> authenticationEntity = new HttpEntity<ObjectNode>(loginRequest,
+                headers);
+
+        ResponseEntity<LoginResponse> authenticationResponse = restTemplate.exchange(
+                createURLWithPort("/api/signin"),
+                HttpMethod.POST, authenticationEntity, LoginResponse.class);
+
+        return Objects.requireNonNull(authenticationResponse.getBody()).getToken();
+    }
+
+
     @WithMockUser("/admin")
     @Test
     public void testCreateCategory() throws Exception {
 
-        Category person = new Category(115, "Category 5");
-        String jsonRequest = objectMapper.writeValueAsString(person);
+        CategoryDTO categoryDTO = new CategoryDTO(115, "Category 6");
+        String jsonRequest = objectMapper.writeValueAsString(categoryDTO);
 
         MvcResult result = mockMvc
                 .perform(post("/api/categories/category").content(jsonRequest).contentType(MediaType.APPLICATION_JSON))
@@ -80,6 +101,27 @@ public class CategoryControllerIntegrationTest {
         assertEquals(200, result.getResponse().getStatus());
 
     }
+
+    @Test
+    public void testCreateCateWithRestTemplate() throws JsonProcessingException {
+        CategoryDTO category = new CategoryDTO(115, "Category 6");
+
+        String token = "Bearer " + getAuthorization();
+
+        headers.add("Authorization", token);
+        HttpEntity<CategoryDTO> entity = new HttpEntity<>(category, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                createURLWithPort("/api/categories/category"),
+                HttpMethod.POST,
+                entity,
+                String.class
+        );
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    }
+
 
     @Test
     public void testGetCategories() {
@@ -135,6 +177,45 @@ public class CategoryControllerIntegrationTest {
 
         assertEquals(200, result.getResponse().getStatus());
 
+    }
+
+    @Test
+    public void testUpdateCateWithRestTemplate() throws JsonProcessingException {
+        String token = "Bearer " + getAuthorization();
+
+        headers.add("Authorization", token);
+
+        Category category = new Category(3, "Category 5");
+
+        HttpEntity<Category> entity = new HttpEntity<Category>(category, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                createURLWithPort("/api/categories/category/3"),
+                HttpMethod.PUT,
+                entity,
+                String.class
+        );
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    }
+
+    @Test
+    public void testDeleteCategory() throws JsonProcessingException {
+        String token = "Bearer " + getAuthorization();
+
+        headers.add("Authorization", token);
+
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                createURLWithPort("/api/categories/category/5"),
+                HttpMethod.DELETE,
+                entity,
+                String.class
+        );
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
